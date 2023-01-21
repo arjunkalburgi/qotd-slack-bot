@@ -1,17 +1,51 @@
 const { App } = require('@slack/bolt');
+const express = require('express')
 require('dotenv').config();
 
-const app = new App({
+const app = express()
+
+app.post('/slack/events', function (req, res) {
+    console.log(req);
+    const c = req.body.challenge;
+    res.set('Content-Type', 'application/json')
+    res.json({"challenge": c})
+})
+
+app.get('/', (req, res) => {
+    res.send('Hello World!')
+})
+
+
+
+const bot = new App({
     token: process.env.SLACK_BOT_TOKEN,
     signingSecret: process.env.SLACK_SIGNING_SECRET
 });
 
 (async () => {
-    await app.start(process.env.PORT || 3000);
-    console.log('⚡️ Bolt app is running!');
+    await bot.start(process.env.PORT || 3000);
+    console.log('⚡️ Bolt bot is running!');
     
     startApp();
 })();
+
+bot.event('app_mention', ({ event, say }) => {  
+    var now = new Date();
+    var then = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate() + 1,  // the next day, ...
+        13, 0, 0            // ... at 13:00:00 hours
+    );
+    var msToThen = then.getTime() - now.getTime();
+
+    var seconds = Math.floor((msToThen / 1000) % 60),
+        minutes = Math.floor((msToThen / (1000 * 60)) % 60),
+        hours = Math.floor((msToThen / (1000 * 60 * 60)) % 24);
+      
+    say(`Hey! The QotD bot is running in this channel. Your next message is in 
+        ${hours + "h " + minutes + "m and " + seconds + "s"}, <@${event.user}>!`);
+});
 
 function startApp() {
     var now = new Date();
@@ -31,7 +65,7 @@ function startApp() {
 
 async function messageChannels() {
     try {
-        const result = await app.client.conversations.list({
+        const result = await bot.client.conversations.list({
             token: process.env.SLACK_BOT_TOKEN
         });
         
@@ -41,7 +75,7 @@ async function messageChannels() {
 
             try {
                 // Call the chat.postMessage method using the WebClient
-                await app.client.chat.postMessage({
+                await bot.client.chat.postMessage({
                     channel: channel.id,
                     text: "<!channel> " + msg
                 });
