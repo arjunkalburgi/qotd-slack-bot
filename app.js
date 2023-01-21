@@ -6,9 +6,14 @@ const app = express()
 
 app.post('/slack/events', function (req, res) {
     console.log(req);
-    const c = req.body.challenge;
-    res.set('Content-Type', 'application/json')
-    res.json({"challenge": c})
+    const type = req.body.type;
+
+    if (type === 'url_verification') {
+        res.set('Content-Type', 'application/json')
+        res.status(200).send({
+            challenge: req.body.challenge,
+        })
+    }
 })
 
 app.get('/', (req, res) => {
@@ -29,7 +34,7 @@ const bot = new App({
     startApp();
 })();
 
-bot.event('app_mention', ({ event, say }) => {  
+bot.event('app_mention', ({ event, say }) => {
     var now = new Date();
     var then = new Date(
         now.getFullYear(),
