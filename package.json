@@ -2,9 +2,9 @@
   "name": "qotd_bot",
   "version": "1.0.0",
   "description": "Question of the Day Bot. Will ask a random question in any channel every day.",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node app.js"
   },
   "author": "",
   "license": "ISC",
