@@ -1,6 +1,17 @@
 const { App } = require('@slack/bolt');
 require('dotenv').config();
 
+const timeTillThen = () => {
+    var now = new Date();
+    var then = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate() + 1,  // the next day, ...
+        13, 0, 0            // ... at 13:00:00 hours
+    );
+    return then.getTime() - now.getTime();
+}
+
 const bot = new App({
     token: process.env.SLACK_BOT_TOKEN,
     signingSecret: process.env.SLACK_SIGNING_SECRET
@@ -14,14 +25,7 @@ const bot = new App({
 })();
 
 bot.event('app_mention', ({ event, say }) => {
-    var now = new Date();
-    var then = new Date(
-        now.getFullYear(),
-        now.getMonth(),
-        now.getDate() + 1,  // the next day, ...
-        13, 0, 0            // ... at 13:00:00 hours
-    );
-    var msToThen = then.getTime() - now.getTime();
+    var msToThen = timeTillThen();
 
     var seconds = Math.floor((msToThen / 1000) % 60),
         minutes = Math.floor((msToThen / (1000 * 60)) % 60),
@@ -32,18 +36,11 @@ bot.event('app_mention', ({ event, say }) => {
 });
 
 function startApp() {
-    var now = new Date();
-    var then = new Date(
-        now.getFullYear(),
-        now.getMonth(),
-        now.getDate() + 1,  // the next day, ...
-        13, 0, 0            // ... at 13:00:00 hours
-    );
-    var msToThen = then.getTime() - now.getTime();
+    var msToThen = timeTillThen();
 
     setTimeout(function() {
         messageChannels();
-        resetQuestion();
+        startApp();
     }, msToThen);
 }
 
