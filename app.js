@@ -1,26 +1,5 @@
 const { App } = require('@slack/bolt');
-const express = require('express')
 require('dotenv').config();
-
-const app = express()
-
-app.post('/slack/events', function (req, res) {
-    console.log(req);
-    const type = req.body.type;
-
-    if (type === 'url_verification') {
-        res.set('Content-Type', 'application/json')
-        res.status(200).send({
-            challenge: req.body.challenge,
-        })
-    }
-})
-
-app.get('/', (req, res) => {
-    res.send('Hello World!')
-})
-
-
 
 const bot = new App({
     token: process.env.SLACK_BOT_TOKEN,
