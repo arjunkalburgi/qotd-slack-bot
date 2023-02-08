@@ -59,6 +59,17 @@ export async function handler(event: APIGatewayEvent): Promise<IHandlerResponse>
   }
 
   console.log("*** slack handler", JSON.stringify(payload));
+  if (payload.event.type === "app_mention") {
+    var then = timeTillThen();
+    const msg = `Hey! The QotD bot is running in this channel. Your next message is
+     in ${then.hours + "h " + then.minutes + "m and " + then.seconds + "s"}!`
+    app.client.chat.postMessage({
+      token: process.env.SLACK_TOKEN,
+      channel: payload.event.channel,
+      thread_ts: payload.event.ts,
+      text: msg
+    });
+  }
 
   const slackEvent: ReceiverEvent = generateReceiverEvent(payload);
   await app.processEvent(slackEvent);
