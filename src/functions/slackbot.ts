@@ -5,6 +5,7 @@ import { IHandlerResponse, SlackEvents } from "../constants";
 import {
   generateReceiverEvent,
   isUrlVerificationRequest,
+  isAppMentionEvent,
   parseRequestBody,
   SayFn } from "../utils";
 
@@ -39,6 +40,8 @@ const timeTillThen = () => {
 }
 
 app.event(SlackEvents.APP_MENTION, async({ say }) => {
+  console.log("*** slack event")
+
   var then = timeTillThen();
   const msg = `Hey! The QotD bot is running in this channel. Your next message is
    in ${then.hours + "h " + then.minutes + "m and " + then.seconds + "s"}!`
@@ -55,6 +58,8 @@ export async function handler(event: APIGatewayEvent): Promise<IHandlerResponse>
       body: payload?.challenge
     };
   }
+
+  console.log("*** slack handler", payload);
 
   const slackEvent: ReceiverEvent = generateReceiverEvent(payload);
   await app.processEvent(slackEvent);
