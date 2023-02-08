@@ -5,7 +5,6 @@ import { IHandlerResponse, SlackEvents } from "../constants";
 import {
   generateReceiverEvent,
   isUrlVerificationRequest,
-  isAppMentionEvent,
   parseRequestBody,
   SayFn } from "../utils";
 
