@@ -61,6 +61,6 @@ export async function handler(event: APIGatewayEvent): Promise<IHandlerResponse>
 
   return {
     statusCode: 200,
-    body: ""
+    body: "Hello, world!"
   };
 }
