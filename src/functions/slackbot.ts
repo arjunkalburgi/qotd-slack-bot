@@ -48,6 +48,10 @@ app.event(SlackEvents.APP_MENTION, async({ say }) => {
   await (say as SayFn)(msg);
 });
 
+app.message(async ({ say }) => {
+  await say("Hi :wave:");
+});
+
 export async function handler(event: APIGatewayEvent): Promise<IHandlerResponse> {
   const payload: any = parseRequestBody(event.body, event.headers["content-type"]);
 
