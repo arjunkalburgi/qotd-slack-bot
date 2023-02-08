@@ -58,7 +58,7 @@ export async function handler(event: APIGatewayEvent): Promise<IHandlerResponse>
     };
   }
 
-  console.log("*** slack handler", payload);
+  console.log("*** slack handler", JSON.stringify(payload));
 
   const slackEvent: ReceiverEvent = generateReceiverEvent(payload);
   await app.processEvent(slackEvent);
