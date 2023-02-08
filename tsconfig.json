@@ -1,0 +1,15 @@
+{
+    "compilerOptions": { 
+      "target": "es6", 
+      "module": "CommonJS",
+      "strict": true, 
+      "declaration": false,
+      "outDir": "./netlify",
+      "esModuleInterop": true    
+    },
+    "exclude": [
+        "node_modules",
+        "netlify",
+        "tests"
+    ]
+  }
