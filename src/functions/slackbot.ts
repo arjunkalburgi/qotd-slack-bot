@@ -48,7 +48,7 @@ app.event(SlackEvents.APP_MENTION, async({ say }) => {
     await (say as SayFn)("The QotD bot is running in this channel. " + timeTillMsg());
 });
 
-let timeoutID: NodeJS.Timeout;
+let timeoutID: NodeJS.Timeout | undefined;
 function startApp(channel_id: string) {
     let msToThen = timeTillThen();
     
@@ -81,6 +81,7 @@ app.command('/pause_qotd', async({body, ack}) => {
     ack();
     
     clearTimeout(timeoutID);
+    timeoutID = undefined;
     
     await app.client.chat.postEphemeral({
         token: process.env.SLACK_BOT_TOKEN,
@@ -92,10 +93,15 @@ app.command('/pause_qotd', async({body, ack}) => {
 
 app.command('/check_qotd', async({body, ack}) => {
     ack();
+
+    var text = (timeoutID === undefined) ? 
+        "The QotD bot is not running in this channel" : 
+        "The QotD bot is running in this channel. " + timeTillMsg();
+
     await app.client.chat.postEphemeral({
         token: process.env.SLACK_BOT_TOKEN,
         channel: body.channel_id,
-        text: "The QotD bot is running in this channel. " + timeTillMsg(),
+        text,
         user: body.user_id
     });
 });
