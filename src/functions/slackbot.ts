@@ -43,17 +43,15 @@ export async function handler(event: APIGatewayEvent): Promise<IHandlerResponse>
 }
 
 app.event(SlackEvents.APP_MENTION, async({ say }) => {
-  await (say as SayFn)(timeTillMsg());
+  await (say as SayFn)("The QotD bot is running in this channel. " + timeTillMsg());
 });
-
 
 app.command('/check_qotd', async({body, ack}) => {
   ack();
   await app.client.chat.postEphemeral({
     token: process.env.SLACK_BOT_TOKEN,
     channel: body.channel_id,
-    text: timeTillMsg(),
+    text: "The QotD bot is running in this channel. " + timeTillMsg(),
     user: body.user_id
   });
 });
-

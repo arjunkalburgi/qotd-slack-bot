@@ -68,6 +68,6 @@ export const timeTillThen = () => {
 
 export const timeTillMsg = () => { 
     var then = timeTillThen();
-    return `The QotD bot is running in this channel. The next message is in ${then.hours + "h " + then.minutes + "m and " + then.seconds + "s"}!`
+    return `The next message is in ${then.hours + "h " + then.minutes + "m and " + then.seconds + "s"}!`
 }
 
