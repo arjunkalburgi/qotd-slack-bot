@@ -21,6 +21,25 @@ const app: App = new App({
   receiver: expressReceiver
 });
 
+export async function handler(event: APIGatewayEvent): Promise<IHandlerResponse> {
+  const payload: any = parseRequestBody(event.body, event.headers["content-type"]);
+
+  if(isUrlVerificationRequest(payload)) {
+    return {
+      statusCode: 200,
+      body: payload?.challenge
+    };
+  }
+
+  const slackEvent: ReceiverEvent = generateReceiverEvent(payload);
+  await app.processEvent(slackEvent);
+
+  return {
+    statusCode: 200,
+    body: "Hello, world!"
+  };
+}
+
 const timeTillThen = () => {
   var now = new Date();
   var then = new Date(
@@ -38,49 +57,10 @@ const timeTillThen = () => {
   };
 }
 
-// app.event(SlackEvents.APP_MENTION, async({ say }) => {
-// });
-
-// app.message('@QotD_Bot', async ({ say }) => {
-//   var then = timeTillThen();
-//   const msg = `Hey! The QotD bot is running in this channel. Your next message is
-//    in ${then.hours + "h " + then.minutes + "m and " + then.seconds + "s"}!`
+app.event(SlackEvents.APP_MENTION, async({ say }) => {
+  var then = timeTillThen();
+  const msg = `Hey! The QotD bot is running in this channel. Your next message is
+   in ${then.hours + "h " + then.minutes + "m and " + then.seconds + "s"}!`
   
-//   await (say as SayFn)(msg);
-// });
-
-app.message(async ({ say }) => {
-  await say("Hi :wave:");
+  await (say as SayFn)(msg);
 });
-
-export async function handler(event: APIGatewayEvent): Promise<IHandlerResponse> {
-  const payload: any = parseRequestBody(event.body, event.headers["content-type"]);
-
-  if(isUrlVerificationRequest(payload)) {
-    return {
-      statusCode: 200,
-      body: payload?.challenge
-    };
-  }
-
-  console.log("*** slack handler", JSON.stringify(payload.event, null, 4));
-  // if (payload.event.type === "app_mention") {
-  //   var then = timeTillThen();
-  //   const msg = `Hey! The QotD bot is running in this channel. Your next message is
-  //    in ${then.hours + "h " + then.minutes + "m and " + then.seconds + "s"}!`
-  //   app.client.chat.postMessage({
-  //     token: process.env.SLACK_TOKEN,
-  //     channel: payload.event.channel,
-  //     thread_ts: payload.event.ts,
-  //     text: msg
-  //   });
-  // }
-
-  const slackEvent: ReceiverEvent = generateReceiverEvent(payload);
-  await app.processEvent(slackEvent);
-
-  return {
-    statusCode: 200,
-    body: "Hello, world!"
-  };
-}
