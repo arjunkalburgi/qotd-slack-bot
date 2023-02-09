@@ -23,20 +23,6 @@ const app: App = new App({
   receiver: expressReceiver
 });
 
-app.event(SlackEvents.APP_MENTION, async({ say }) => {
-  await (say as SayFn)("The QotD bot is running in this channel. " + timeTillMsg());
-});
-
-app.command('/check_qotd', async({body, ack}) => {
-  ack();
-  await app.client.chat.postEphemeral({
-    token: process.env.SLACK_BOT_TOKEN,
-    channel: body.channel_id,
-    text: "The QotD bot is running in this channel. " + timeTillMsg(),
-    user: body.user_id
-  });
-});
-
 export async function handler(event: APIGatewayEvent): Promise<IHandlerResponse> {
   const payload: any = parseRequestBody(event.body, event.headers["content-type"]);
 
@@ -52,6 +38,20 @@ export async function handler(event: APIGatewayEvent): Promise<IHandlerResponse>
 
   return {
     statusCode: 200,
-    body: "Hello, world!"
+    body: ""
   };
 }
+
+app.event(SlackEvents.APP_MENTION, async({ say }) => {
+  await (say as SayFn)("The QotD bot is running in this channel. " + timeTillMsg());
+});
+
+app.command('/check_qotd', async({body, ack}) => {
+  ack();
+  await app.client.chat.postEphemeral({
+    token: process.env.SLACK_BOT_TOKEN,
+    channel: body.channel_id,
+    text: "The QotD bot is running in this channel. " + timeTillMsg(),
+    user: body.user_id
+  });
+});
