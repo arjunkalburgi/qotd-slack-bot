@@ -63,7 +63,7 @@ export async function handler(event: APIGatewayEvent): Promise<IHandlerResponse>
     };
   }
 
-  console.log("*** slack handler", JSON.stringify(payload));
+  console.log("*** slack handler", JSON.stringify(payload.event, null, 4));
   // if (payload.event.type === "app_mention") {
   //   var then = timeTillThen();
   //   const msg = `Hey! The QotD bot is running in this channel. Your next message is
