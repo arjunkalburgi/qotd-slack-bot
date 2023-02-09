@@ -6,7 +6,9 @@ import {
   generateReceiverEvent,
   isUrlVerificationRequest,
   parseRequestBody,
-  SayFn } from "../utils";
+  SayFn,
+  timeTillMsg,
+} from "../utils";
 
 dotenv.config();
 
@@ -40,27 +42,18 @@ export async function handler(event: APIGatewayEvent): Promise<IHandlerResponse>
   };
 }
 
-const timeTillThen = () => {
-  var now = new Date();
-  var then = new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      now.getDate() + 1,  // the next day, ...
-      13, 0, 0            // ... at 13:00:00 hours
-  );
-  
-  const msToThen = then.getTime() - now.getTime();
-  return { 
-    seconds: Math.floor((msToThen / 1000) % 60),
-    minutes: Math.floor((msToThen / (1000 * 60)) % 60),
-    hours: Math.floor((msToThen / (1000 * 60 * 60)) % 24)
-  };
-}
-
 app.event(SlackEvents.APP_MENTION, async({ say }) => {
-  var then = timeTillThen();
-  const msg = `Hey! The QotD bot is running in this channel. Your next message is
-   in ${then.hours + "h " + then.minutes + "m and " + then.seconds + "s"}!`
-  
-  await (say as SayFn)(msg);
+  await (say as SayFn)(timeTillMsg());
 });
+
+
+app.command('/check_qotd', async({body, ack}) => {
+  ack();
+  await app.client.chat.postEphemeral({
+    token: process.env.SLACK_BOT_TOKEN,
+    channel: body.channel_id,
+    text: timeTillMsg(),
+    user: body.user_id
+  });
+});
+
