@@ -53,8 +53,6 @@ app.event(SlackEvents.APP_MENTION, async({ say }) => {
 app.command('/start_qotd', async({body, ack}) => {
     ack();
 
-    console.log("********************************", timeOfThen());
-    
     const msg = await getQuestion();
     try {
         var a = await app.client.chat.scheduleMessage({
@@ -62,7 +60,7 @@ app.command('/start_qotd', async({body, ack}) => {
             text: "<!channel> " + msg,
             post_at: timeOfThen() / 1000
         });
-        console.log(a, timeOfThen(), timeTillMsgStr(), msg);
+        console.log(a);
         await app.client.chat.postEphemeral({
             token: process.env.SLACK_BOT_TOKEN,
             channel: body.channel_id,
@@ -121,7 +119,7 @@ app.command('/check_qotd', async({body, ack}) => {
     ack();
     const now = new Date();
     let tomorrow = now; 
-    tomorrow.setDate(now.getDate() + 1);
+    tomorrow.setFullYear(now.getFullYear() + 1);
 
     try {
         const result = await app.client.chat.scheduledMessages.list({
@@ -129,7 +127,7 @@ app.command('/check_qotd', async({body, ack}) => {
             latest: now.getTime() / 1000,
             oldest: tomorrow.getTime() / 1000
         });
-        console.log(result);
+        console.log({result, latest: now.getTime() / 1000, oldest: tomorrow.getTime() / 1000});
         var text = (result.scheduled_messages !== undefined && result.scheduled_messages.length > 0) ? 
             "The QotD bot is running in this channel. " + timeTillMsgStr() :
             "The QotD bot is not running in this channel";

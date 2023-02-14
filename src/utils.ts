@@ -61,6 +61,7 @@ export const timeOfThen = () => {
             13, 0, 0            // ... at 13:00:00 hours
         );
 
+    console.log ("now.getHours() >= 13", now.getHours() >= 13);
     console.log ("timeofthen", then);
     return then.getTime();
 }
