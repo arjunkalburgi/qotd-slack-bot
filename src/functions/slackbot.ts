@@ -60,7 +60,7 @@ app.command('/start_qotd', async({body, ack}) => {
             text: "<!channel> " + msg,
             post_at: timeOfThen()
         });
-        app.client.chat.postEphemeral({
+        await app.client.chat.postEphemeral({
             token: process.env.SLACK_BOT_TOKEN,
             channel: body.channel_id,
             text: "QotD bot is now set! " + timeTillMsgStr(),
@@ -68,7 +68,7 @@ app.command('/start_qotd', async({body, ack}) => {
         });
     } catch (error) { 
         console.error(error);
-        app.client.chat.postEphemeral({
+        await app.client.chat.postEphemeral({
             token: process.env.SLACK_BOT_TOKEN,
             channel: body.channel_id,
             text: "Something is wrong with the QotD bot! Please try again",
@@ -96,7 +96,7 @@ app.command('/pause_qotd', async({body, ack}) => {
                 scheduled_message_id: result.scheduled_messages[0].id
             });
         }
-        app.client.chat.postEphemeral({
+        await app.client.chat.postEphemeral({
             token: process.env.SLACK_BOT_TOKEN,
             channel: body.channel_id,
             user: body.user_id,
@@ -105,7 +105,7 @@ app.command('/pause_qotd', async({body, ack}) => {
         });
     } catch (error) {
         console.error(error);
-        app.client.chat.postEphemeral({
+        await app.client.chat.postEphemeral({
             token: process.env.SLACK_BOT_TOKEN,
             channel: body.channel_id,
             text: "Something is wrong with the QotD bot! Please try again",
@@ -129,7 +129,7 @@ app.command('/check_qotd', async({body, ack}) => {
         var text = (result.scheduled_messages !== undefined && result.scheduled_messages.length > 0) ? 
             "The QotD bot is running in this channel. " + timeTillMsgStr() :
             "The QotD bot is not running in this channel";
-        app.client.chat.postEphemeral({
+        await app.client.chat.postEphemeral({
             token: process.env.SLACK_BOT_TOKEN,
             channel: body.channel_id,
             user: body.user_id,
@@ -138,7 +138,7 @@ app.command('/check_qotd', async({body, ack}) => {
         });
     } catch (error) {
         console.error(error);
-        app.client.chat.postEphemeral({
+        await app.client.chat.postEphemeral({
             token: process.env.SLACK_BOT_TOKEN,
             channel: body.channel_id,
             text: "Something is wrong with the QotD bot! Please try again",
