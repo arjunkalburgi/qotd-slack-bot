@@ -56,6 +56,7 @@ app.command('/start_qotd', async({body, ack}) => {
     const msg = await getQuestion();
     try {
         var a = await app.client.chat.scheduleMessage({
+            token: process.env.SLACK_BOT_TOKEN,
             channel: body.channel_id,
             text: "<!channel> " + msg,
             post_at: timeOfThen() / 1000
@@ -87,12 +88,14 @@ app.command('/pause_qotd', async({body, ack}) => {
     
     try {
         result = await app.client.chat.scheduledMessages.list({
+            token: process.env.SLACK_BOT_TOKEN,
             channel: body.channel_id,
             latest: now.getTime() / 1000,
             oldest: tomorrow.getTime() / 1000
         });
         if (result.scheduled_messages !== undefined && typeof(result.scheduled_messages[0].id) === "string") {
             await app.client.chat.deleteScheduledMessage({
+                token: process.env.SLACK_BOT_TOKEN,
                 channel: body.channel_id,
                 scheduled_message_id: result.scheduled_messages[0].id
             });
@@ -123,6 +126,7 @@ app.command('/check_qotd', async({body, ack}) => {
 
     try {
         const result = await app.client.chat.scheduledMessages.list({
+            token: process.env.SLACK_BOT_TOKEN,
             channel: body.channel_id,
             latest: now.getTime() / 1000,
             oldest: tomorrow.getTime() / 1000
