@@ -70,12 +70,18 @@ export const timeTillMsgStr = () => {
     return `The next message is in ${hours + "h " + minutes + "m and " + seconds + "s"}!`
 }
 
+interface Question {
+    question: string;
+}
+interface SheetyQuestionsResponse {
+    questions: Question[];
+}
 export async function getQuestion() {
     let url = 'https://api.sheety.co/1d451b7406988a7d18b381d137c82628/defaultQotDQuestions/questions';
     return await fetch(url)
         .then((response) => response.json())
-        .then(json => {
-            let questions = json.questions;
+        .then((json) => {
+            let questions = (json as SheetyQuestionsResponse).questions;
             let qotd = questions[Math.floor((Math.random()*questions.length))]
             return qotd.question;
         });
