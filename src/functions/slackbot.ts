@@ -118,8 +118,8 @@ app.command('/pause_qotd', async({body, ack}) => {
 app.command('/check_qotd', async({body, ack}) => {
     ack();
     const now = new Date();
-    let tomorrow = now; 
-    tomorrow.setFullYear(now.getFullYear() + 1);
+    let tomorrow = new Date();
+    tomorrow.setFullYear(tomorrow.getFullYear() + 1);
 
     try {
         const result = await app.client.chat.scheduledMessages.list({
