@@ -73,13 +73,10 @@ export const timeTillMsgStr = () => {
 export async function getQuestion() {
     const res = await new Promise<string>(function (resolve, reject) {
         const req = new XMLHttpRequest();
-        req.onreadystatechange = function (event) {
+        req.onreadystatechange = function (_: any) {
             if (req.readyState !== 4) return;
-            if (req.status >= 200 && req.status < 300) {
-                resolve(req.responseText);
-            } else {
-                reject(req.statusText);
-            }
+            if (req.status >= 200 && req.status < 300) resolve(req.responseText);
+            else reject(req.statusText);
         };
         req.open("GET", "https://api.sheety.co/1d451b7406988a7d18b381d137c82628/defaultQotDQuestions/questions");
         req.send();
