@@ -127,7 +127,7 @@ app.command('/check_qotd', async({body, ack}) => {
             latest: now.getTime() / 1000,
             oldest: tomorrow.getTime() / 1000
         });
-        console.log({result, latest: now.getTime() / 1000, oldest: tomorrow.getTime() / 1000});
+        console.log({result, channel: body.channel_id, latest: now.getTime(), oldest: tomorrow.getTime()});
         var text = (result.scheduled_messages !== undefined && result.scheduled_messages.length > 0) ? 
             "The QotD bot is running in this channel. " + timeTillMsgStr() :
             "The QotD bot is not running in this channel";
