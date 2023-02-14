@@ -58,7 +58,7 @@ app.command('/start_qotd', async({body, ack}) => {
         await app.client.chat.scheduleMessage({
             channel: body.channel_id,
             text: "<!channel> " + msg,
-            post_at: timeOfThen()
+            post_at: timeOfThen() / 1000
         });
         await app.client.chat.postEphemeral({
             token: process.env.SLACK_BOT_TOKEN,

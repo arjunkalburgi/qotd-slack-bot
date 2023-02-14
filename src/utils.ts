@@ -51,12 +51,16 @@ export interface SayFn {
 
 export const timeOfThen = () => {
     var now = new Date();
-    var then = new Date(
-        now.getFullYear(),
-        now.getMonth(),
-        now.getDate() + 1,  // the next day, ...
-        13, 0, 0            // ... at 13:00:00 hours
+    var then = (now.getHours() > 13) ? 
+        new Date(now.getFullYear(), now.getMonth(),
+            now.getDate() + 1,  // the next day, ...
+            13, 0, 0            // ... at 13:00:00 hours
+        ) : 
+        new Date(now.getFullYear(), now.getMonth(), 
+            now.getDate(),      // today, ...
+            13, 0, 0            // ... at 13:00:00 hours
         );
+
     return then.getTime();
 }
     
