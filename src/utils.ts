@@ -48,27 +48,25 @@ export interface SayFn {
     (message: string): Promise<ChatPostMessageResponse>;
 }
 
-export const timeTillThen = () => {
-  var now = new Date();
-  var then = new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      now.getDate() + 1,  // the next day, ...
-      13, 0, 0            // ... at 13:00:00 hours
-  );
-  
-  const msToThen = then.getTime() - now.getTime();
-  return { 
-    ms: msToThen, 
-    seconds: Math.floor((msToThen / 1000) % 60),
-    minutes: Math.floor((msToThen / (1000 * 60)) % 60),
-    hours: Math.floor((msToThen / (1000 * 60 * 60)) % 24)
-  };
+export const timeOfThen = () => {
+    var now = new Date();
+    var then = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate() + 1,  // the next day, ...
+        13, 0, 0            // ... at 13:00:00 hours
+        );
+    return then.getTime();
 }
-
-export const timeTillMsg = () => { 
-    var then = timeTillThen();
-    return `The next message is in ${then.hours + "h " + then.minutes + "m and " + then.seconds + "s"}!`
+    
+export const timeTillMsgStr = () => { 
+    var now = new Date();
+    const msToThen = timeOfThen() - now.getTime();
+  
+    const seconds = Math.floor((msToThen / 1000) % 60);
+    const minutes = Math.floor((msToThen / (1000 * 60)) % 60);
+    const hours = Math.floor((msToThen / (1000 * 60 * 60)) % 24);
+    return `The next message is in ${hours + "h " + minutes + "m and " + seconds + "s"}!`
 }
 
 export async function getQuestion() {
