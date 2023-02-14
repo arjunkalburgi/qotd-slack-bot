@@ -87,8 +87,8 @@ app.command('/pause_qotd', async({body, ack}) => {
     try {
         result = await app.client.chat.scheduledMessages.list({
             channel: body.channel_id,
-            latest: now.getTime(),
-            oldest: tomorrow.getTime()
+            latest: now.getTime() / 1000,
+            oldest: tomorrow.getTime() / 1000
         });
         if (result.scheduled_messages !== undefined && typeof(result.scheduled_messages[0].id) === "string") {
             await app.client.chat.deleteScheduledMessage({
@@ -123,8 +123,8 @@ app.command('/check_qotd', async({body, ack}) => {
     try {
         const result = await app.client.chat.scheduledMessages.list({
             channel: body.channel_id,
-            latest: now.getTime(),
-            oldest: tomorrow.getTime()
+            latest: now.getTime() / 1000,
+            oldest: tomorrow.getTime() / 1000
         });
         var text = (result.scheduled_messages !== undefined && result.scheduled_messages.length > 0) ? 
             "The QotD bot is running in this channel. " + timeTillMsgStr() :
