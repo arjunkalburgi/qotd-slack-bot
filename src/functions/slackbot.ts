@@ -50,6 +50,47 @@ app.event(SlackEvents.APP_MENTION, async({ say }) => {
 
 // need to implement auto start of the next one.
 
+app.command('/test_qotd', async({body, ack}) => {
+    ack();
+
+    try {
+        var a = await app.client.chat.scheduleMessage({
+            token: process.env.SLACK_BOT_TOKEN,
+            channel: body.channel_id,
+            text: "<!channel> ",
+            post_at: timeOfThen() / 1000
+        });
+        console.log("*** scheduleMessage", a);
+
+        const now = new Date();
+        let tomorrow = new Date();
+        tomorrow.setFullYear(tomorrow.getFullYear() + 1);
+        const result = await app.client.chat.scheduledMessages.list({
+            token: process.env.SLACK_BOT_TOKEN,
+            channel: body.channel_id,
+            latest: now.getTime() / 1000,
+            oldest: tomorrow.getTime() / 1000
+        });
+        console.log("*** scheduleMessages.list", {result, channel: body.channel_id, latest: now.getTime(), oldest: tomorrow.getTime()});
+        
+        await app.client.chat.postEphemeral({
+            token: process.env.SLACK_BOT_TOKEN,
+            channel: body.channel_id,
+            user: body.user_id,
+            // text
+            text: JSON.stringify(result)
+        });
+    } catch (error) { 
+        console.error(error);
+        await app.client.chat.postEphemeral({
+            token: process.env.SLACK_BOT_TOKEN,
+            channel: body.channel_id,
+            text: "Something is wrong with the QotD bot! Please try again",
+            user: body.user_id
+        });
+    }
+});
+
 app.command('/start_qotd', async({body, ack}) => {
     ack();
 
@@ -62,6 +103,16 @@ app.command('/start_qotd', async({body, ack}) => {
             post_at: timeOfThen() / 1000
         });
         console.log(a);
+        const now = new Date();
+        let tomorrow = new Date();
+        tomorrow.setFullYear(tomorrow.getFullYear() + 1);
+        const result = await app.client.chat.scheduledMessages.list({
+            token: process.env.SLACK_BOT_TOKEN,
+            channel: body.channel_id,
+            latest: now.getTime() / 1000,
+            oldest: tomorrow.getTime() / 1000
+        });
+        console.log({result, channel: body.channel_id, latest: now.getTime(), oldest: tomorrow.getTime()});
         await app.client.chat.postEphemeral({
             token: process.env.SLACK_BOT_TOKEN,
             channel: body.channel_id,
