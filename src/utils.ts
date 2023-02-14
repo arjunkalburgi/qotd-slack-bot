@@ -1,6 +1,5 @@
 import { ReceiverEvent } from "@slack/bolt";
 import { ChatPostMessageResponse } from '@slack/web-api';
-import fetch from "node-fetch";
 
 export function parseRequestBody(stringBody: string | null, contentType: string | undefined): any | undefined {
     try {
@@ -70,19 +69,22 @@ export const timeTillMsgStr = () => {
     return `The next message is in ${hours + "h " + minutes + "m and " + seconds + "s"}!`
 }
 
-interface Question {
-    question: string;
-}
-interface SheetyQuestionsResponse {
-    questions: Question[];
-}
 export async function getQuestion() {
-    let url = 'https://api.sheety.co/1d451b7406988a7d18b381d137c82628/defaultQotDQuestions/questions';
-    return await fetch(url)
-        .then((response) => response.json())
-        .then((json) => {
-            let questions = (json as SheetyQuestionsResponse).questions;
-            let qotd = questions[Math.floor((Math.random()*questions.length))]
-            return qotd.question;
-        });
+    const res = await new Promise<string>(function (resolve, reject) {
+        const req = new XMLHttpRequest();
+        req.onreadystatechange = function (event) {
+            if (req.readyState !== 4) return;
+            if (req.status >= 200 && req.status < 300) {
+                resolve(req.responseText);
+            } else {
+                reject(req.statusText);
+            }
+        };
+        req.open("GET", "https://api.sheety.co/1d451b7406988a7d18b381d137c82628/defaultQotDQuestions/questions");
+        req.send();
+    });
+
+    let questions = JSON.parse(res).questions;
+    let qotd = questions[Math.floor((Math.random()*questions.length))]
+    return qotd.question;
 }
