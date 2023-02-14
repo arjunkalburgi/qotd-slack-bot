@@ -48,6 +48,8 @@ app.event(SlackEvents.APP_MENTION, async({ say }) => {
     await (say as SayFn)("The QotD bot is running in this channel. " + timeTillMsgStr());
 });
 
+// need to implement auto start of the next one.
+
 app.command('/start_qotd', async({body, ack}) => {
     ack();
     
@@ -124,6 +126,7 @@ app.command('/check_qotd', async({body, ack}) => {
             latest: now.getTime(),
             oldest: tomorrow.getTime()
         });
+        console.log(result);
         var text = (result.scheduled_messages !== undefined && typeof(result.scheduled_messages[0].id) === "string") ? 
             "The QotD bot is not running in this channel" : 
             "The QotD bot is running in this channel. " + timeTillMsgStr();
