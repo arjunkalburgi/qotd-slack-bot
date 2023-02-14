@@ -1,5 +1,6 @@
 import { ReceiverEvent } from "@slack/bolt";
 import { ChatPostMessageResponse } from '@slack/web-api';
+var XMLHttpRequest = require('xhr2');
 
 export function parseRequestBody(stringBody: string | null, contentType: string | undefined): any | undefined {
     try {
