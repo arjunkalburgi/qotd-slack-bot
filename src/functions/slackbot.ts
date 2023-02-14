@@ -60,7 +60,7 @@ app.command('/start_qotd', async({body, ack}) => {
             text: "<!channel> " + msg,
             post_at: timeOfThen() / 1000
         });
-        console.info(a, new Date(timeOfThen()), timeTillMsgStr(), msg);
+        console.log(a, new Date(timeOfThen()), timeTillMsgStr(), msg);
         await app.client.chat.postEphemeral({
             token: process.env.SLACK_BOT_TOKEN,
             channel: body.channel_id,
