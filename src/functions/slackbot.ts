@@ -126,10 +126,9 @@ app.command('/check_qotd', async({body, ack}) => {
             latest: now.getTime(),
             oldest: tomorrow.getTime()
         });
-        console.log(result);
-        var text = (result.scheduled_messages !== undefined && typeof(result.scheduled_messages[0].id) === "string") ? 
-            "The QotD bot is not running in this channel" : 
-            "The QotD bot is running in this channel. " + timeTillMsgStr();
+        var text = (result.scheduled_messages !== undefined && result.scheduled_messages.length > 0) ? 
+            "The QotD bot is running in this channel. " + timeTillMsgStr() :
+            "The QotD bot is not running in this channel";
         app.client.chat.postEphemeral({
             token: process.env.SLACK_BOT_TOKEN,
             channel: body.channel_id,
