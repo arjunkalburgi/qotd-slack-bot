@@ -48,48 +48,7 @@ app.event(SlackEvents.APP_MENTION, async({ say }) => {
     await (say as SayFn)("The QotD bot is running in this channel. " + timeTillMsgStr());
 });
 
-// need to implement auto start of the next one.
-
-app.command('/test_qotd', async({body, ack}) => {
-    ack();
-
-    try {
-        var a = await app.client.chat.scheduleMessage({
-            token: process.env.SLACK_BOT_TOKEN,
-            channel: body.channel_id,
-            text: "<!channel> ",
-            post_at: timeOfThen() / 1000
-        });
-        console.log("*** scheduleMessage", a);
-
-        const now = new Date();
-        let tomorrow = new Date();
-        tomorrow.setFullYear(tomorrow.getFullYear() + 1);
-        const result = await app.client.chat.scheduledMessages.list({
-            token: process.env.SLACK_BOT_TOKEN,
-            channel: body.channel_id,
-            latest: tomorrow.getTime() / 1000,
-            oldest: now.getTime() / 1000
-        });
-        console.log("*** scheduleMessages.list", {result, channel: body.channel_id, latest: now.getTime(), oldest: tomorrow.getTime()});
-        
-        await app.client.chat.postEphemeral({
-            token: process.env.SLACK_BOT_TOKEN,
-            channel: body.channel_id,
-            user: body.user_id,
-            // text
-            text: JSON.stringify(result)
-        });
-    } catch (error) { 
-        console.error(error);
-        await app.client.chat.postEphemeral({
-            token: process.env.SLACK_BOT_TOKEN,
-            channel: body.channel_id,
-            text: "Something is wrong with the QotD bot! Please try again",
-            user: body.user_id
-        });
-    }
-});
+// TODO: need to implement auto start of the next one.
 
 app.command('/start_qotd', async({body, ack}) => {
     ack();
@@ -109,8 +68,8 @@ app.command('/start_qotd', async({body, ack}) => {
         const result = await app.client.chat.scheduledMessages.list({
             token: process.env.SLACK_BOT_TOKEN,
             channel: body.channel_id,
-            latest: now.getTime() / 1000,
-            oldest: tomorrow.getTime() / 1000
+            latest: tomorrow.getTime() / 1000,
+            oldest: now.getTime() / 1000
         });
         console.log({result, channel: body.channel_id, latest: now.getTime(), oldest: tomorrow.getTime()});
         await app.client.chat.postEphemeral({
@@ -141,8 +100,8 @@ app.command('/pause_qotd', async({body, ack}) => {
         result = await app.client.chat.scheduledMessages.list({
             token: process.env.SLACK_BOT_TOKEN,
             channel: body.channel_id,
-            latest: now.getTime() / 1000,
-            oldest: tomorrow.getTime() / 1000
+            latest: tomorrow.getTime() / 1000,
+            oldest: now.getTime() / 1000
         });
         if (result.scheduled_messages !== undefined && typeof(result.scheduled_messages[0].id) === "string") {
             await app.client.chat.deleteScheduledMessage({
@@ -156,7 +115,7 @@ app.command('/pause_qotd', async({body, ack}) => {
             channel: body.channel_id,
             user: body.user_id,
             // text: "QotD bot is now disabled in this channel."
-            text: JSON.stringify(result)
+            text: "QotD bot is now disabled in this channel. " + JSON.stringify(result)
         });
     } catch (error) {
         console.error(error);
@@ -179,10 +138,10 @@ app.command('/check_qotd', async({body, ack}) => {
         const result = await app.client.chat.scheduledMessages.list({
             token: process.env.SLACK_BOT_TOKEN,
             channel: body.channel_id,
-            latest: now.getTime() / 1000,
-            oldest: tomorrow.getTime() / 1000
+            latest: tomorrow.getTime() / 1000,
+            oldest: now.getTime() / 1000
         });
-        console.log({result, channel: body.channel_id, latest: now.getTime(), oldest: tomorrow.getTime()});
+        console.log({result: result.scheduled_messages, channel: body.channel_id, latest: now.getTime(), oldest: tomorrow.getTime()});
         var text = (result.scheduled_messages !== undefined && result.scheduled_messages.length > 0) ? 
             "The QotD bot is running in this channel. " + timeTillMsgStr() :
             "The QotD bot is not running in this channel";
