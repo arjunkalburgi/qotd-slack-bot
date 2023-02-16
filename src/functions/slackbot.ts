@@ -48,16 +48,10 @@ app.event(SlackEvents.APP_MENTION, async({ say }) => {
     await (say as SayFn)("The QotD bot is running in this channel. " + timeTillMsgStr());
 });
 
-app.message('<@U04KX155PNE>', async ({ message, say }) => {
+// app.message('<@U04KX155PNE>', async ({ message, say }) => {
+app.message(async ({ message, body, say }) => {
+    console.log({message, body})
     await say(`Hi`);
-});
-
-app.message('<@QotD Bot>', async ({ message, say }) => {
-    await say(`Hello`);
-});
-
-app.message('work', async ({ message, say }) => {
-    await say(`it works`);
 });
 
 app.command('/start_qotd', async({body, ack}) => {
