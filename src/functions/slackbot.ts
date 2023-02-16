@@ -48,7 +48,17 @@ app.event(SlackEvents.APP_MENTION, async({ say }) => {
     await (say as SayFn)("The QotD bot is running in this channel. " + timeTillMsgStr());
 });
 
-// TODO: need to implement auto start of the next one.
+app.message('<@U04KX155PNE>', async ({ message, say }) => {
+    await say(`Hi`);
+});
+
+app.message('<@QotD Bot>', async ({ message, say }) => {
+    await say(`Hello`);
+});
+
+app.message('👋🏾', async ({ message, say }) => {
+    await say(`it works`);
+});
 
 app.command('/start_qotd', async({body, ack}) => {
     ack();
@@ -93,8 +103,6 @@ app.command('/pause_qotd', async({body, ack}) => {
             oldest: now.getTime() / 1000
         });
 
-        console.log({result, list: result.scheduled_messages})
-
         if (result.scheduled_messages !== undefined && result.scheduled_messages.length > 0) {
             if (result.scheduled_messages[0] == undefined || result.scheduled_messages[0].id == undefined) return;
             await app.client.chat.deleteScheduledMessage({
@@ -106,8 +114,7 @@ app.command('/pause_qotd', async({body, ack}) => {
                 token: process.env.SLACK_BOT_TOKEN,
                 channel: body.channel_id,
                 user: body.user_id,
-                // text: "QotD bot is now disabled in this channel."
-                text: "QotD bot is now disabled in this channel. " + JSON.stringify(result)
+                text: "QotD bot is now disabled in this channel."
             });
         
         } else {
@@ -143,8 +150,6 @@ app.command('/check_qotd', async({body, ack}) => {
             oldest: now.getTime() / 1000
         });
         
-        console.log({result, list: result.scheduled_messages})
-
         await app.client.chat.postEphemeral({
             token: process.env.SLACK_BOT_TOKEN,
             channel: body.channel_id,
