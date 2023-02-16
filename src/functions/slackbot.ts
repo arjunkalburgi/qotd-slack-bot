@@ -56,7 +56,7 @@ app.message('<@QotD Bot>', async ({ message, say }) => {
     await say(`Hello`);
 });
 
-app.message('👋🏾', async ({ message, say }) => {
+app.message('work', async ({ message, say }) => {
     await say(`it works`);
 });
 
