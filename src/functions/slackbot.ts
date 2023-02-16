@@ -68,8 +68,8 @@ app.command('/test_qotd', async({body, ack}) => {
         const result = await app.client.chat.scheduledMessages.list({
             token: process.env.SLACK_BOT_TOKEN,
             channel: body.channel_id,
-            latest: now.getTime() / 1000,
-            oldest: tomorrow.getTime() / 1000
+            latest: tomorrow.getTime() / 1000,
+            oldest: now.getTime() / 1000
         });
         console.log("*** scheduleMessages.list", {result, channel: body.channel_id, latest: now.getTime(), oldest: tomorrow.getTime()});
         
