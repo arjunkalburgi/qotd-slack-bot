@@ -83,8 +83,8 @@ app.command('/pause_qotd', async({body, ack}) => {
     ack();
 
     const now = new Date();
-    let tomorrow = now; 
-    tomorrow.setDate(now.getDate() + 1);
+    let tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
     try {
         const result = await app.client.chat.scheduledMessages.list({
             token: process.env.SLACK_BOT_TOKEN,
