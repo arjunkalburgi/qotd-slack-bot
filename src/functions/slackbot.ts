@@ -55,23 +55,13 @@ app.command('/start_qotd', async({body, ack}) => {
 
     const msg = await getQuestion();
     try {
-        var a = await app.client.chat.scheduleMessage({
+        await app.client.chat.scheduleMessage({
             token: process.env.SLACK_BOT_TOKEN,
             channel: body.channel_id,
             text: "<!channel> " + msg,
             post_at: timeOfThen() / 1000
         });
-        console.log(a);
-        const now = new Date();
-        let tomorrow = new Date();
-        tomorrow.setFullYear(tomorrow.getFullYear() + 1);
-        const result = await app.client.chat.scheduledMessages.list({
-            token: process.env.SLACK_BOT_TOKEN,
-            channel: body.channel_id,
-            latest: tomorrow.getTime() / 1000,
-            oldest: now.getTime() / 1000
-        });
-        console.log({result, channel: body.channel_id, latest: now.getTime(), oldest: tomorrow.getTime()});
+        
         await app.client.chat.postEphemeral({
             token: process.env.SLACK_BOT_TOKEN,
             channel: body.channel_id,
@@ -91,49 +81,10 @@ app.command('/start_qotd', async({body, ack}) => {
 
 app.command('/pause_qotd', async({body, ack}) => {
     ack();
+
     const now = new Date();
     let tomorrow = now; 
     tomorrow.setDate(now.getDate() + 1);
-    let result;
-    
-    try {
-        result = await app.client.chat.scheduledMessages.list({
-            token: process.env.SLACK_BOT_TOKEN,
-            channel: body.channel_id,
-            latest: tomorrow.getTime() / 1000,
-            oldest: now.getTime() / 1000
-        });
-        if (result.scheduled_messages !== undefined && typeof(result.scheduled_messages[0].id) === "string") {
-            await app.client.chat.deleteScheduledMessage({
-                token: process.env.SLACK_BOT_TOKEN,
-                channel: body.channel_id,
-                scheduled_message_id: result.scheduled_messages[0].id
-            });
-        }
-        await app.client.chat.postEphemeral({
-            token: process.env.SLACK_BOT_TOKEN,
-            channel: body.channel_id,
-            user: body.user_id,
-            // text: "QotD bot is now disabled in this channel."
-            text: "QotD bot is now disabled in this channel. " + JSON.stringify(result)
-        });
-    } catch (error) {
-        console.error(error);
-        await app.client.chat.postEphemeral({
-            token: process.env.SLACK_BOT_TOKEN,
-            channel: body.channel_id,
-            text: "Something is wrong with the QotD bot! Please try again",
-            user: body.user_id
-        });
-    }
-});
-
-app.command('/check_qotd', async({body, ack}) => {
-    ack();
-    const now = new Date();
-    let tomorrow = new Date();
-    tomorrow.setFullYear(tomorrow.getFullYear() + 1);
-
     try {
         const result = await app.client.chat.scheduledMessages.list({
             token: process.env.SLACK_BOT_TOKEN,
@@ -141,16 +92,62 @@ app.command('/check_qotd', async({body, ack}) => {
             latest: tomorrow.getTime() / 1000,
             oldest: now.getTime() / 1000
         });
-        console.log({result: result.scheduled_messages, channel: body.channel_id, latest: now.getTime(), oldest: tomorrow.getTime()});
-        var text = (result.scheduled_messages !== undefined && result.scheduled_messages.length > 0) ? 
-            "The QotD bot is running in this channel. " + timeTillMsgStr() :
-            "The QotD bot is not running in this channel";
+
+        if (result.scheduled_messages !== undefined && result.scheduled_messages.length > 0) {
+            if (result.scheduled_messages[0] == undefined || result.scheduled_messages[0].id == undefined) return;
+            await app.client.chat.deleteScheduledMessage({
+                token: process.env.SLACK_BOT_TOKEN,
+                channel: body.channel_id,
+                scheduled_message_id: result.scheduled_messages[0].id
+            });
+            await app.client.chat.postEphemeral({
+                token: process.env.SLACK_BOT_TOKEN,
+                channel: body.channel_id,
+                user: body.user_id,
+                // text: "QotD bot is now disabled in this channel."
+                text: "QotD bot is now disabled in this channel. " + JSON.stringify(result)
+            });
+        
+        } else {
+            await app.client.chat.postEphemeral({
+                token: process.env.SLACK_BOT_TOKEN,
+                channel: body.channel_id,
+                text: "You don't have any scheduled messages.",
+                user: body.user_id
+            });
+        }
+    } catch (error) {
+        console.error(error);
+        await app.client.chat.postEphemeral({
+            token: process.env.SLACK_BOT_TOKEN,
+            channel: body.channel_id,
+            text: "Something is wrong with the QotD bot! Please try again" + JSON.stringify(error),
+            user: body.user_id
+        });
+    }
+});
+
+app.command('/check_qotd', async({body, ack}) => {
+    ack();
+
+    const now = new Date();
+    let tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    try {
+        const result = await app.client.chat.scheduledMessages.list({
+            token: process.env.SLACK_BOT_TOKEN,
+            channel: body.channel_id,
+            latest: tomorrow.getTime() / 1000,
+            oldest: now.getTime() / 1000
+        });
+        
         await app.client.chat.postEphemeral({
             token: process.env.SLACK_BOT_TOKEN,
             channel: body.channel_id,
             user: body.user_id,
-            // text
-            text: text + " " + JSON.stringify(result)
+            text: (result.scheduled_messages !== undefined && result.scheduled_messages.length > 0) 
+                ? "The QotD bot is running in this channel. " + timeTillMsgStr()
+                : "The QotD bot is not running in this channel"
         });
     } catch (error) {
         console.error(error);
