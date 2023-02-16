@@ -1,4 +1,4 @@
-import { App, ExpressReceiver, ReceiverEvent } from "@slack/bolt";
+import { App, ExpressReceiver, ReceiverEvent, GenericMessageEvent } from "@slack/bolt";
 import { APIGatewayEvent } from "aws-lambda";
 import * as dotenv from "dotenv";
 import { IHandlerResponse, SlackEvents } from "../constants";
@@ -49,8 +49,8 @@ app.event(SlackEvents.APP_MENTION, async({ say }) => {
 });
 
 // app.message('<@U04KX155PNE>', async ({ message, say }) => {
-app.message(async ({ message, body, say }) => {
-    console.log({message, body})
+app.message(async ({ message, say }) => {
+    console.log({message, user: (message as GenericMessageEvent).user})
     await say(`Hi`);
 });
 
