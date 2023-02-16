@@ -48,24 +48,45 @@ app.event(SlackEvents.APP_MENTION, async({ say }) => {
     await (say as SayFn)("The QotD bot is running in this channel. " + timeTillMsgStr());
 });
 
-app.message(async ({ message, say }) => {
+app.message(async ({ message, body, say }) => {
     const bot_id = (message as GenericMessageEvent).user;
-    console.log({message, user: bot_id})
+    if (bot_id !== "U04KX155PNE") return;
 
-    if (bot_id === "U04KX155PNE") {
+    try {
         await say(`Hi, the bot said something. The message test worked.`);
+        var a = await app.client.chat.scheduleMessage({
+            token: process.env.SLACK_BOT_TOKEN,
+            channel: body.channel_id,
+            text: "<!channel> " + await getQuestion(),
+            post_at: timeOfThen() / 1000
+        });
+        console.log(a);
+
+        await app.client.chat.postEphemeral({
+            token: process.env.SLACK_BOT_TOKEN,
+            channel: body.channel_id,
+            text: "QotD bot is set for tomorrow " + timeTillMsgStr(),
+            user: body.user_id
+        });
+    } catch (error) { 
+        console.error(error);
+        await app.client.chat.postEphemeral({
+            token: process.env.SLACK_BOT_TOKEN,
+            channel: body.channel_id,
+            text: "Something is wrong with the QotD bot! Please try again",
+            user: body.user_id
+        });
     }
 });
 
 app.command('/start_qotd', async({body, ack}) => {
     ack();
 
-    const msg = await getQuestion();
     try {
         await app.client.chat.scheduleMessage({
             token: process.env.SLACK_BOT_TOKEN,
             channel: body.channel_id,
-            text: "<!channel> " + msg,
+            text: "<!channel> " + await getQuestion(),
             post_at: timeOfThen() / 1000
         });
         
