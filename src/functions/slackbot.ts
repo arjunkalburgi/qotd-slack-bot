@@ -52,7 +52,8 @@ app.message(async ({ message, body, say }) => {
     console.log({message, body});
     const bot_id = (message as GenericMessageEvent).user;
     const bots = await app.client.bots.info({
-        token: process.env.SLACK_BOT_TOKEN
+        token: process.env.SLACK_BOT_TOKEN,
+        team_id: body.team_id
     })
     console.log({bots})
     if (bot_id !== "U04KX155PNE") return;
