@@ -49,15 +49,21 @@ app.event(SlackEvents.APP_MENTION, async({ say }) => {
 });
 
 app.message(async ({ message, body, say }) => {
+    console.log({message, body});
     const bot_id = (message as GenericMessageEvent).user;
+    const bots = await app.client.bots.info({
+        token: process.env.SLACK_BOT_TOKEN
+    })
+    console.log({bots})
     if (bot_id !== "U04KX155PNE") return;
 
+    const msg = await getQuestion();
     try {
         await say(`Hi, the bot said something. The message test worked.`);
         var a = await app.client.chat.scheduleMessage({
             token: process.env.SLACK_BOT_TOKEN,
             channel: body.channel_id,
-            text: "<!channel> " + await getQuestion(),
+            text: "<!channel> " + msg,
             post_at: timeOfThen() / 1000
         });
         console.log(a);
@@ -82,11 +88,12 @@ app.message(async ({ message, body, say }) => {
 app.command('/start_qotd', async({body, ack}) => {
     ack();
 
+    const msg = await getQuestion();
     try {
         await app.client.chat.scheduleMessage({
             token: process.env.SLACK_BOT_TOKEN,
             channel: body.channel_id,
-            text: "<!channel> " + await getQuestion(),
+            text: "<!channel> " + msg,
             post_at: timeOfThen() / 1000
         });
         
