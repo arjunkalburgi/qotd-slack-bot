@@ -53,7 +53,7 @@ app.message(async ({ message, body, say }) => {
     const bot = await app.client.auth.test({
         token: process.env.SLACK_BOT_TOKEN
     })
-    console.log({bot, user_id, 'same?': bot.user_id === user_id})
+    console.log({message, bot, user_id, 'same?': bot.user_id === user_id})
     if (user_id !== bot.user_id) return;
 
     const msg = await getQuestion();
