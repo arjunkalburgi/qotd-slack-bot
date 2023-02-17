@@ -45,6 +45,7 @@ export async function handler(event: APIGatewayEvent): Promise<IHandlerResponse>
 }
 
 app.event(SlackEvents.APP_MENTION, async({ say }) => {
+    console.log("it was mentioned by itself");
     await (say as SayFn)("The QotD bot is running in this channel. " + timeTillMsgStr());
 });
 
@@ -93,7 +94,7 @@ app.command('/start_qotd', async({body, ack}) => {
         await app.client.chat.scheduleMessage({
             token: process.env.SLACK_BOT_TOKEN,
             channel: body.channel_id,
-            text: "<!channel> " + msg,
+            text: "<!channel> " + msg + "<@U04KX155PNE>",
             post_at: timeOfThen() / 1000
         });
         
