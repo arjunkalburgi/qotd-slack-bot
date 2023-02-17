@@ -49,14 +49,12 @@ app.event(SlackEvents.APP_MENTION, async({ say }) => {
 });
 
 app.message(async ({ message, body, say }) => {
-    console.log({message, body});
-    const bot_id = (message as GenericMessageEvent).user;
-    const bots = await app.client.bots.info({
-        token: process.env.SLACK_BOT_TOKEN,
-        team_id: body.team_id
+    const user_id = (message as GenericMessageEvent).user;
+    const bot = await app.client.auth.test({
+        token: process.env.SLACK_BOT_TOKEN
     })
-    console.log({bots})
-    if (bot_id !== "U04KX155PNE") return;
+    console.log({bot, user_id, 'same?': bot.user_id === user_id})
+    if (user_id !== bot.user_id) return;
 
     const msg = await getQuestion();
     try {
