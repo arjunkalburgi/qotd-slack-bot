@@ -55,10 +55,11 @@ app.message(async ({ message, body, say }) => {
     })
     console.log({message, bot, user_id, 'same?': bot.user_id === user_id})
     if (user_id !== bot.user_id) return;
+    console.log("SETTING TOMORROW'S MESSAGE!!!!");
 
     const msg = await getQuestion();
     try {
-        await say(`Hi, the bot said something. The message test worked.`);
+        await say(`Hi, the bot said something. The message test worked. SETTING UP TOMORROW'S MESSAGE!!!`);
         var a = await app.client.chat.scheduleMessage({
             token: process.env.SLACK_BOT_TOKEN,
             channel: body.channel_id,
