@@ -51,7 +51,7 @@ export interface SayFn {
 
 export const timeOfThen = () => {
     var now = new Date();
-    var then = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 19, 55, 0) 
+    var then = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 20, 15, 0) 
     
     // (now.getHours() >= 13) ? 
     //     new Date(now.getFullYear(), now.getMonth(),
