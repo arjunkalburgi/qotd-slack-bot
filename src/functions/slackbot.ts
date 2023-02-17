@@ -1,4 +1,4 @@
-import { App, ExpressReceiver, ReceiverEvent, GenericMessageEvent } from "@slack/bolt";
+import { App, ExpressReceiver, ReceiverEvent } from "@slack/bolt";
 import { APIGatewayEvent } from "aws-lambda";
 import * as dotenv from "dotenv";
 import { IHandlerResponse, SlackEvents } from "../constants";
@@ -6,7 +6,6 @@ import {
     generateReceiverEvent,
     isUrlVerificationRequest,
     parseRequestBody,
-    SayFn,
     timeTillMsgStr,
     timeOfThen,
     getQuestion,
@@ -44,48 +43,6 @@ export async function handler(event: APIGatewayEvent): Promise<IHandlerResponse>
     };
 }
 
-app.event(SlackEvents.APP_MENTION, async({ say }) => {
-    console.log("it was mentioned by itself");
-    await (say as SayFn)("The QotD bot is running in this channel. " + timeTillMsgStr());
-});
-
-app.message(async ({ message, body, say }) => {
-    const user_id = (message as GenericMessageEvent).user;
-    const bot = await app.client.auth.test({
-        token: process.env.SLACK_BOT_TOKEN
-    })
-    console.log({message, bot, user_id, 'same?': bot.user_id === user_id})
-    if (user_id !== bot.user_id) return;
-    console.log("SETTING TOMORROW'S MESSAGE!!!!");
-
-    const msg = await getQuestion();
-    try {
-        await say(`Hi, the bot said something. The message test worked. SETTING UP TOMORROW'S MESSAGE!!!`);
-        var a = await app.client.chat.scheduleMessage({
-            token: process.env.SLACK_BOT_TOKEN,
-            channel: body.channel_id,
-            text: "<!channel> " + msg,
-            post_at: timeOfThen() / 1000
-        });
-        console.log(a);
-
-        await app.client.chat.postEphemeral({
-            token: process.env.SLACK_BOT_TOKEN,
-            channel: body.channel_id,
-            text: "QotD bot is set for tomorrow " + timeTillMsgStr(),
-            user: body.user_id
-        });
-    } catch (error) { 
-        console.error(error);
-        await app.client.chat.postEphemeral({
-            token: process.env.SLACK_BOT_TOKEN,
-            channel: body.channel_id,
-            text: "Something is wrong with the QotD bot! Please try again",
-            user: body.user_id
-        });
-    }
-});
-
 app.command('/start_qotd', async({body, ack}) => {
     ack();
 
@@ -94,7 +51,7 @@ app.command('/start_qotd', async({body, ack}) => {
         await app.client.chat.scheduleMessage({
             token: process.env.SLACK_BOT_TOKEN,
             channel: body.channel_id,
-            text: "<!channel> " + msg + "<@U04KX155PNE>",
+            text: "<!channel> " + msg,
             post_at: timeOfThen() / 1000
         });
         
@@ -181,8 +138,8 @@ app.command('/check_qotd', async({body, ack}) => {
             channel: body.channel_id,
             user: body.user_id,
             text: (result.scheduled_messages !== undefined && result.scheduled_messages.length > 0) 
-                ? "The QotD bot is running in this channel. " + timeTillMsgStr() + JSON.stringify(result.scheduled_messages)
-                : "The QotD bot is not running in this channel " + JSON.stringify(result.scheduled_messages)
+                ? "The QotD bot is running in this channel. " + timeTillMsgStr()
+                : "The QotD bot is not running in this channel "
         });
     } catch (error) {
         console.error(error);
